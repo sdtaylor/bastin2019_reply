@@ -14,7 +14,7 @@ tree_cover_raster_files = list.files(paste0(base_data_folder,'tree_cover') ,patt
 # to extract biomass and cover data with. These will be restricted to land.
 
 set.seed(208)
-random_point_count = 100000
+random_point_count = 1000
 points_spatial = sp::spsample(ecoregions, n=random_point_count, type='random')
 points_spatial = SpatialPointsDataFrame(points_spatial, data=data.frame(point_id = 1:random_point_count))
 points_df = as_tibble(points_spatial)
@@ -31,6 +31,7 @@ final_data = tibble()
 
 # Iterate over each 10 deg. x 10 deg. grid cell raster and extract data from it
 # points falling outside the raster grid cell will be NA and thus discarded. 
+progress = 1
 for(raster_file in tree_cover_raster_files){
   r = raster::raster(raster_file)
   this_raster_point_data = points_df %>%
@@ -40,8 +41,13 @@ for(raster_file in tree_cover_raster_files){
   
   final_data = final_data %>%
     bind_rows(this_raster_point_data)
+  
+  print(paste('tree_cover: ',progress, 'of ', length(tree_cover_raster_files), 'files'))
+  progress = progress + 1
+  
 }
 
+progress = 1
 for(raster_file in aboveground_biomass_raster_files){
   r = raster::raster(raster_file)
   this_raster_point_data = points_df %>%
@@ -51,6 +57,9 @@ for(raster_file in aboveground_biomass_raster_files){
   
   final_data = final_data %>%
     bind_rows(this_raster_point_data)
+  
+  print(paste('aboveground_biomass: ',progress, 'of ', length(aboveground_biomass_raster_files), 'files'))
+  progress = progress + 1
 }
 
 ###################################################################
