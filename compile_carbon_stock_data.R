@@ -8,7 +8,7 @@ ecoregions = rgdal::readOGR(paste0(base_data_folder,'wwf_terrestrial_biomes'),'w
 
 aboveground_biomass_raster_files = list.files(paste0(base_data_folder,'aboveground_biomass') ,pattern = 'aboveground_biomass_ha_2000', full.names = T)
 tree_cover_raster_files = list.files(paste0(base_data_folder,'tree_cover') ,pattern = 'Hansen_GFC', full.names = T)
-
+belowground_biomass_file = paste0(base_data_folder,'belowground_biomass/OCSTHA_M_100cm_250m_ll.tif')
 ################################################
 # Use the WWF Ecoregion dataset to generate a global set of random points from which
 # to extract biomass and cover data with. These will be restricted to land.
@@ -61,6 +61,16 @@ for(raster_file in aboveground_biomass_raster_files){
   print(paste('aboveground_biomass: ',progress, 'of ', length(aboveground_biomass_raster_files), 'files'))
   progress = progress + 1
 }
+
+# belowground is a single tif
+r = raster::raster(belowground_biomass_file)
+this_raster_point_data = points_df %>%
+  mutate(data_value = raster::extract(r, points_spatial)) %>%
+  filter(!is.na(data_value)) %>%
+  mutate(data_type = 'bgb')
+
+final_data = final_data %>%
+  bind_rows(this_raster_point_data)
 
 ###################################################################
 
