@@ -6,9 +6,9 @@ base_data_folder = '/home/shawn/data/global_biomass_and_treecover/'
 ############################################
 ecoregions = rgdal::readOGR(paste0(base_data_folder,'wwf_terrestrial_biomes'),'wwf_terr_ecos')
 
-aboveground_biomass_raster_files = list.files(paste0(base_data_folder,'aboveground_biomass') ,pattern = 'aboveground_biomass_ha_2000', full.names = T)
+aboveground_biomass_raster_files = list.files(paste0(base_data_folder,'aboveground_carbon') ,pattern = 'aboveground_biomass_ha_2000', full.names = T)
 tree_cover_raster_files = list.files(paste0(base_data_folder,'tree_cover') ,pattern = 'Hansen_GFC', full.names = T)
-belowground_biomass_file = paste0(base_data_folder,'belowground_biomass/OCSTHA_M_100cm_250m_ll.tif')
+belowground_carbon_file = paste0(base_data_folder,'belowground_carbon/OCSTHA_M_100cm_250m_ll.tif')
 ################################################
 # Use the WWF Ecoregion dataset to generate a global set of random points from which
 # to extract biomass and cover data with. These will be restricted to land.
@@ -63,11 +63,11 @@ for(raster_file in aboveground_biomass_raster_files){
 }
 
 # belowground is a single tif
-r = raster::raster(belowground_biomass_file)
+r = raster::raster(belowground_carbon_file)
 this_raster_point_data = points_df %>%
   mutate(data_value = raster::extract(r, points_spatial)) %>%
   filter(!is.na(data_value)) %>%
-  mutate(data_type = 'bgb')
+  mutate(data_type = 'soc')
 
 final_data = final_data %>%
   bind_rows(this_raster_point_data)
