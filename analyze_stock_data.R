@@ -16,65 +16,80 @@ biome_counts = biomass_and_cover %>%
   count(biome_name)
 
 bastin_carbon = read_csv('bastin_carbon_potential.csv') %>%
-  #mutate(biomass =  (bastin_carbon_stock *(1-percent_soc))) %>%
-  mutate(biomass = bastin_carbon_stock) %>%
+  rename(biomass = bastin_carbon_stock) %>%
   mutate(tree_cover = 100)
 # Add in 0,0 points for drawing the line on the figures
 # and copy it to all 3 biomass types for faceting
 bastin_carbon = bastin_carbon %>%
   bind_rows(mutate(., biomass=0, tree_cover=0)) %>%
-  full_join(expand.grid(biome_name = bastin_carbon$biome_name, biomass_type = c('above_ground_carbon','soc','total_carbon')),
+  full_join(expand.grid(biome_name = bastin_carbon$biome_name, biomass_type = c('above_ground_carbon','total_carbon')),
                         by = 'biome_name')
 
+# Adjust the carbon storage/ha potential from Bastin estimates to remove the fraction that is SOC
+bastin_carbon = bastin_carbon %>%
+  mutate(biomass = case_when(
+    biomass_type == 'above_ground_carbon' ~ biomass *(1-percent_soc),
+    TRUE ~ biomass
+  ))
+
+# Pretty naems for the different carbon pools
+base_levels = c('above_ground_carbon','soc','total_carbon')
+nice_names = c('Above Ground Carbon','Soil Organic Carbon','Total Carbon')
+bastin_carbon$biomass_type = factor(bastin_carbon$biomass_type, levels = base_levels,labels = nice_names)
+biomass_and_cover$biomass_type = factor(biomass_and_cover$biomass_type, levels = base_levels,labels = nice_names)
 #############################################
 # large plot of all 3 biomass types x ecoregion
-large_plot = ggplot(biomass_and_cover, aes(x=tree_cover, y=biomass)) + 
+
+large_plot_biomes = c('Boreal Forests/Taiga','Tropical & Subtropical Grasslands, Savannas & Shrublands',
+                      'Temperate Broadleaf & Mixed Forests', 'Deserts & Xeric Shrublands',
+                      'Tropical & Subtropical Moist Broadleaf Forests','Temperate Grasslands, Savannas & Shrublands ')
+
+
+large_plot = ggplot(filter(biomass_and_cover,biome_name %in% large_plot_biomes), aes(x=tree_cover, y=biomass)) + 
   geom_point(alpha=0.5, color='grey60', shape=1) + 
   #scale_fill_viridis_c() + 
   #geom_smooth(color='#0072B2') +
   geom_smooth(method = 'gam', color = 'black', size=1) + 
   stat_poly_eq(aes(label =  paste(stat(eq.label), stat(adj.rr.label), sep = "~~~~")),
                formula = y~x, rr.digits = 3, coef.digits = 3, parse = TRUE,
-               size=1.5) + 
-  geom_line(data = bastin_carbon, color='#D55E00', size=1) + 
-  facet_grid(str_wrap(biome_name, 20)~biomass_type, scales = 'free_y') +
-  theme_bw(5) +
+               size=2.5) + 
+  geom_line(data = filter(bastin_carbon,biome_name %in% large_plot_biomes), color='#D55E00', size=1) + 
+  facet_wrap(str_wrap(biome_name, 40)~biomass_type, scales = 'free_y', ncol=3) +
+  theme_bw() +
+  theme(strip.text = element_text(size=8),
+        axis.text = element_text(size=8),
+        axis.title = element_text(size=10)) + 
   labs(x='Percent Tree Cover',y='Tonnes C/Ha')
-ggsave('biomass_plots.png', plot = large_plot, width = 10, height = 25, units = 'cm', dpi=400)
+ggsave('fig1_carbon_stock_plots.png', plot = large_plot, width = 20, height = 24, units = 'cm', dpi=400)
 
 # Just total carbon and a single biome
-focal_biome = 'Tropical & Subtropical Dry Broadleaf Forests'
+focal_biome = 'Temperate Conifer Forests'
 biomass_and_cover %>%
-  filter(biome_name == focal_biome, biomass_type=='total_carbon') %>%
+  filter(biome_name == focal_biome) %>%
   ggplot(aes(x=tree_cover, y=biomass)) + 
   geom_point(alpha=0.5, color='grey60', shape=1, size=4) + 
   stat_poly_eq(aes(label =  paste(stat(eq.label), stat(adj.rr.label), sep = "~~~~")),
                formula = y~x, rr.digits = 3, coef.digits = 2, parse = TRUE,
                size=5) + 
   #scale_fill_viridis_c() + 
-  geom_smooth(color='#0072B2') +
-  #geom_smooth(method = 'lm', color = 'black', size=3) + 
-  geom_line(data = filter(bastin_carbon,biome_name ==focal_biome, biomass_type=='total_carbon'), color='#D55E00', size=3) + 
-  scale_y_continuous(breaks=seq(0,500,100)) + 
+  #geom_smooth(color='#0072B2') +
+  geom_smooth(method = 'lm', color = 'black', size=3) + 
+  geom_line(data = filter(bastin_carbon,biome_name ==focal_biome), color='#D55E00', size=3) + 
+  #scale_y_continuous(breaks=seq(0,500,100)) + 
   #ylim(0,500) + 
-  coord_cartesian(ylim=c(0,500)) + 
-  facet_wrap(~biome_name , scales = 'free_y', ncol=3) +
+  #coord_cartesian(ylim=c(0,500)) + 
+  facet_wrap(biome_name~biomass_type , scales = 'free_y', ncol=3) +
   theme_bw(base_size=25) +
   labs(x='% Tree Cover', y='Tonnes C/Ha')
 
-##########
-# mean carbon totals per biome
-mean_values = biomass_and_cover %>%
-  group_by(biome_name, biomass_type) %>%
-  summarise(mean_carbon = mean(biomass))
-
 ########################################################
+# Calculate the estimate of slopes from Figure 1
 biome_coefficients = biomass_and_cover %>%
   #sample_frac(0.3) %>%
   group_by(biome_name, biomass_type) %>%
   do(tidy(lm(biomass ~ tree_cover, data = .))) %>%
   ungroup() %>%
-  filter(term == 'tree_cover', biomass_type %in% c('above_ground_carbon','total_carbon')) %>%
+  filter(term == 'tree_cover', biomass_type %in% c('Above Ground Carbon','Total Carbon')) %>%
   select(biome_name, biomass_type, carbon_coef = estimate, carbon_coef_std_error = std.error) %>%
   mutate(source = 'Current Estimates')
 
@@ -84,7 +99,8 @@ bastin_carbon_coefficients = read_csv('bastin_carbon_potential.csv') %>%
   select(-bastin_carbon_stock, -percent_soc) %>%
   gather(biomass_type, carbon_coef, total_carbon, above_ground_carbon) %>%
   mutate(carbon_coef_std_error = 0,
-         source = 'Bastin Estimates - Original')
+         source = 'Bastin Estimates - Original') %>%
+  mutate(biomass_type = factor(biomass_type, levels = base_levels,labels = nice_names))
 
 biome_coefficients = biome_coefficients %>%
   bind_rows(bastin_carbon_coefficients) 
