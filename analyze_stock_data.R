@@ -5,12 +5,16 @@ library(ggpmisc)
 
 biome_names = read_csv('wwf_ecoregion_biomes.csv')
 
-biomass_and_cover = read_csv('biome_data_from_random_points.csv') %>%
+biomass_and_cover = read_csv('biome_data_from_random_points_with_protected_areas.csv') %>%
+  #filter(!is.na(protected_area_status)) %>%
+  filter(protected_area_status %in% c("Ia","Ib","II", "III","IV","V" )) %>%
+  select(-protected_area_status) %>%
   mutate(above_ground_carbon = agb*0.5) %>%
   mutate(total_carbon = above_ground_carbon + soc) %>%
   gather(biomass_type, biomass, above_ground_carbon, soc, total_carbon) %>%
   left_join(biome_names, by='biome_id') %>%
   filter(complete.cases(.))
+
 
 biome_counts = biomass_and_cover %>%
   count(biome_name)
@@ -42,7 +46,7 @@ biomass_and_cover$biomass_type = factor(biomass_and_cover$biomass_type, levels =
 
 large_plot_biomes = c('Boreal Forests/Taiga','Tropical & Subtropical Grasslands, Savannas & Shrublands',
                       'Temperate Broadleaf & Mixed Forests', 'Deserts & Xeric Shrublands',
-                      'Tropical & Subtropical Moist Broadleaf Forests','Temperate Grasslands, Savannas & Shrublands ')
+                      'Tropical & Subtropical Moist Broadleaf Forests','Temperate Grasslands, Savannas & Shrublands')
 
 
 large_plot = ggplot(filter(biomass_and_cover,biome_name %in% large_plot_biomes), aes(x=tree_cover, y=biomass)) + 
@@ -60,10 +64,28 @@ large_plot = ggplot(filter(biomass_and_cover,biome_name %in% large_plot_biomes),
         axis.text = element_text(size=8),
         axis.title = element_text(size=10)) + 
   labs(x='Percent Tree Cover',y='Tonnes C/Ha')
-ggsave('fig1_carbon_stock_plots.png', plot = large_plot, width = 20, height = 24, units = 'cm', dpi=400)
+ggsave('manuscript/fig1_carbon_stock_plots.png', plot = large_plot, width = 20, height = 26, units = 'cm', dpi=400)
+
+# the plot again but all biomes
+large_plot_all_biomes = ggplot(biomass_and_cover, aes(x=tree_cover, y=biomass)) + 
+  geom_point(alpha=0.5, color='grey60', shape=1) + 
+  #scale_fill_viridis_c() + 
+  #geom_smooth(color='#0072B2') +
+  geom_smooth(method = 'gam', color = 'black', size=1) + 
+  stat_poly_eq(aes(label =  paste(stat(eq.label), stat(adj.rr.label), sep = "~~~~")),
+               formula = y~x, rr.digits = 3, coef.digits = 3, parse = TRUE,
+               size=2.5) + 
+  geom_line(data = filter(bastin_carbon,biome_name %in% large_plot_biomes), color='#D55E00', size=1) + 
+  facet_wrap(str_wrap(biome_name, 40)~biomass_type, scales = 'free_y', ncol=3) +
+  theme_bw() +
+  theme(strip.text = element_text(size=8),
+        axis.text = element_text(size=8),
+        axis.title = element_text(size=10)) + 
+  labs(x='Percent Tree Cover',y='Tonnes C/Ha')
+ggsave('manuscript/fig2_carbon_stock_plots_all_biomes.png', plot = large_plot_all_biomes, width = 20, height = 60, units = 'cm', dpi=300)
 
 # Just total carbon and a single biome
-focal_biome = 'Temperate Conifer Forests'
+focal_biome = 'Temperate Grasslands, Savannas & Shrublands'
 biomass_and_cover %>%
   filter(biome_name == focal_biome) %>%
   ggplot(aes(x=tree_cover, y=biomass)) + 
@@ -146,7 +168,7 @@ biome_carbon_potential = biome_coefficients %>%
 table_data = biome_carbon_potential %>%
   select(-restoration_potential_Mha) %>%
   gather(value_type, value, T_C_ha_potential, GtC_potential) %>%
-  mutate(value = round(value,0)) %>%
+  mutate(value = round(value,1)) %>%
   mutate(col_header = paste(biomass_type, value_type, source)) %>%
   select(-biomass_type, -value_type, -source) %>%
   spread(col_header, value) 
