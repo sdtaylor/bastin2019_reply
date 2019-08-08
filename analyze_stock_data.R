@@ -44,9 +44,9 @@ biomass_and_cover$biomass_type = factor(biomass_and_cover$biomass_type, levels =
 #############################################
 # large plot of all 3 biomass types x ecoregion
 
-large_plot_biomes = c('Boreal Forests/Taiga','Tropical & Subtropical Grasslands, Savannas & Shrublands',
+large_plot_biomes = c('Boreal Forests/Taiga','Tropical Grasslands, Savannas & Shrublands',
                       'Temperate Broadleaf & Mixed Forests', 'Deserts & Xeric Shrublands',
-                      'Tropical & Subtropical Moist Broadleaf Forests','Temperate Grasslands, Savannas & Shrublands')
+                      'Tropical Moist Broadleaf Forests','Temperate Grasslands, Savannas & Shrublands')
 
 
 large_plot = ggplot(filter(biomass_and_cover,biome_name %in% large_plot_biomes), aes(x=tree_cover, y=biomass)) + 
@@ -58,9 +58,9 @@ large_plot = ggplot(filter(biomass_and_cover,biome_name %in% large_plot_biomes),
                formula = y~x, rr.digits = 3, coef.digits = 3, parse = TRUE,
                size=2.5) + 
   geom_line(data = filter(bastin_carbon,biome_name %in% large_plot_biomes), color='#D55E00', size=1) + 
-  facet_wrap(str_wrap(biome_name, 40)~biomass_type, scales = 'free_y', ncol=3) +
+  facet_wrap(biome_name~biomass_type, scales = 'free_y', ncol=3) +
   theme_bw() +
-  theme(strip.text = element_text(size=8),
+  theme(strip.text = element_text(size=7),
         axis.text = element_text(size=8),
         axis.title = element_text(size=10)) + 
   labs(x='Percent Tree Cover',y='Tonnes C/Ha')
@@ -75,10 +75,10 @@ large_plot_all_biomes = ggplot(biomass_and_cover, aes(x=tree_cover, y=biomass)) 
   stat_poly_eq(aes(label =  paste(stat(eq.label), stat(adj.rr.label), sep = "~~~~")),
                formula = y~x, rr.digits = 3, coef.digits = 3, parse = TRUE,
                size=2.5) + 
-  geom_line(data = filter(bastin_carbon,biome_name %in% large_plot_biomes), color='#D55E00', size=1) + 
-  facet_wrap(str_wrap(biome_name, 40)~biomass_type, scales = 'free_y', ncol=3) +
+  geom_line(data = bastin_carbon, color='#D55E00', size=1) + 
+  facet_wrap(biome_name~biomass_type, scales = 'free_y', ncol=3) +
   theme_bw() +
-  theme(strip.text = element_text(size=8),
+  theme(strip.text = element_text(size=7),
         axis.text = element_text(size=8),
         axis.title = element_text(size=10)) + 
   labs(x='Percent Tree Cover',y='Tonnes C/Ha')
