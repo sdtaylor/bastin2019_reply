@@ -81,7 +81,7 @@ large_plot_all_biomes = ggplot(biomass_and_cover, aes(x=tree_cover, y=biomass)) 
         axis.text = element_text(size=8),
         axis.title = element_text(size=10)) + 
   labs(x='Percent Tree Cover',y='Tonnes C/Ha')
-ggsave('manuscript/fig2_carbon_stock_plots_all_biomes.png', plot = large_plot_all_biomes, width = 20, height = 60, units = 'cm', dpi=300)
+ggsave('manuscript/figS1_carbon_stock_plots_all_biomes.png', plot = large_plot_all_biomes, width = 20, height = 60, units = 'cm', dpi=300)
 
 # Just total carbon and a single biome for diagnostic plots
 focal_biome = 'Temperate Grasslands, Savannas & Shrublands'
