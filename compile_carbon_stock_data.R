@@ -5,10 +5,7 @@ base_data_folder = '/home/shawn/data/global_biomass_and_treecover/'
 
 ############################################
 ecoregions = rgdal::readOGR(paste0(base_data_folder,'wwf_terrestrial_biomes'),'wwf_terr_ecos')
-
 protected_areas = rgdal::readOGR(paste0(base_data_folder,'protected_areas'),'WDPA_Aug2019-shapefile-polygons')
-non_marine_protected = subset(protected_areas, protected_areas$MARINE %in% c(0,1))
-rm(protected_areas)
 
 aboveground_biomass_raster_files = list.files(paste0(base_data_folder,'aboveground_carbon') ,pattern = 'aboveground_biomass_ha_2000', full.names = T)
 tree_cover_raster_files = list.files(paste0(base_data_folder,'tree_cover') ,pattern = 'Hansen_GFC', full.names = T)
@@ -18,8 +15,8 @@ belowground_carbon_file = paste0(base_data_folder,'belowground_carbon/OCSTHA_M_1
 # to extract biomass and cover data with. These will be restricted to land.
 
 set.seed(208)
-random_point_count = 1000
-points_spatial = sp::spsample(non_marine_protected, n=random_point_count, type='regular')
+random_point_count = 1000 # We did this with 1000000 points, but it takes a *lot* of memory (48GB for us)
+points_spatial = sp::spsample(ecoregions, n=random_point_count, type='random')
 points_spatial = SpatialPointsDataFrame(points_spatial, data=data.frame(point_id = 1:random_point_count))
 points_df = as_tibble(points_spatial)
 
@@ -27,7 +24,7 @@ points_df = as_tibble(points_spatial)
 # Get ecoregions and protected areas for all points
 points_df$biome_id =sp::over(points_spatial, ecoregions)$BIOME
 
-protected_areas_info = sp::over(points_spatial, non_marine_protected)
+protected_areas_info = sp::over(points_spatial, protected_areas)
 points_df$protected_area_status = protected_areas_info$IUCN_CAT
 
 # Save the full protected areas metadata for all sampled points
@@ -86,4 +83,4 @@ final_data = final_data %>%
 final_data = final_data %>%
   spread(data_type, data_value)
 
-write_csv(final_data, 'biome_data_from_random_points.csv')
+write_csv(final_data, 'biome_data_from_random_points_with_protected_areas.csv')
