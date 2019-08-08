@@ -83,4 +83,4 @@ final_data = final_data %>%
 final_data = final_data %>%
   spread(data_type, data_value)
 
-write_csv(final_data, 'biome_data_from_random_points.csv')
+write_csv(final_data, 'biome_data_from_random_points_with_protected_areas.csv')
