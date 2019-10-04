@@ -41,12 +41,25 @@ None declared.
 ### Preprint DOI
 10.1101/730325, [https://doi.org/10.1101/730325](https://doi.org/10.1101/730325)
 
-**Character count**: 12113, **Tables**: 1, **Figures**: 1
+**Character count**: 12496, **Tables**: 1, **Figures**: 1
 
 \newpage
 
 # Abstract
-In calculating the potential carbon storage potential stemming from global tree restoration Bastin et al. 2019 use two flawed assumptions: 1) that a hectare of additional canopy is equivalent to gaining the full potential of a hectare in carbon stock, and 2) that soil organic carbon (SOC) from increased canopy cover will accumulate quickly enough to mitigate anthropogenic carbon emissions. We use global datasets of tree cover, soil organic carbon, and above ground biomass to estimate the empirical relationships of tree cover and carbon stock storage. A more realistic range is between 71.7 and 75.7 GtC globally, with a large uncertainty associated with SOC. This is less than half of the original 205 GtC estimate, and just around twice the annual anthropogenic emissions globally. While we agree on the value of assessing global reforestation potential, we suggest caution in considering it the most effective strategy to mitigate anthropogenic emissions.
+*Key Message*  
+Bastin et al. 2019 used flawed assumptions in calculating the carbon storage of restored forests worldwide, resulting in a gross overestimate.
+
+*Context*  
+Bastin et al. 2019 use two flawed assumptions: 1) that a hectare of additional canopy is equivalent to gaining the full potential of a hectare in carbon stock, and 2) that soil organic carbon (SOC) from increased canopy cover will accumulate quickly enough to mitigate anthropogenic carbon emissions.  
+
+*Aims*  
+We re-evaluated the potential carbon storage worldwide using empirical relationships of tree cover and carbon.
+
+*Methods and Results*  
+We use global datasets of tree cover, soil organic carbon, and above ground biomass to estimate the empirical relationships of tree cover and carbon stock storage. A more realistic range of global carbon storage potential is between 71.7 and 75.7 GtC globally, with a large uncertainty associated with SOC. This is less than half of the original 205 GtC estimate, and just around twice the annual anthropogenic emissions globally.
+
+*Conclusion*  
+The potential global carbon storage of restored forests is much less than that estimated by Bastin et al. 2019. While we agree on the value of assessing global reforestation potential, we suggest caution in considering it the most effective strategy to mitigate anthropogenic emissions.
 
 # Main
 -@bastin2019 (hereafter referred to as Bastin 2019) use a novel machine learning based method to model global tree canopy cover potential. After accounting for current tree canopy cover and areas already occupied by urban and agricultural land they estimate 900 Mha of potential tree canopy cover available worldwide for reforestation. Using biome specific estimates of Tonnes C/ha they calculate the global carbon storage potential of this 900 Mha of tree canopy cover. The Tonnes/C ha-1 values for each biome are derived from average estimates of total carbon storage from two studies of forest [@pan2011] and tropical grassland [@grace2006] carbon stock. Thus from their calculation a hectare of restored tree canopy is equivalent to adding a full hectare of carbon stock potential regardless of the vegetation already in place, and results in an overestimate of the global carbon stock potential of restored trees. 
