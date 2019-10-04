@@ -1,14 +1,8 @@
 ---
-title: "Rethinking global carbon storage potential of trees. A comment on Bastin et. al 2019"
-
-author:
-- Shawn D. TAYLOR$^1$*, shawntaylor@weecology.org
-- Sergio MARCONI$^1$, sergio.marconi@weecology.org 
-
 csl: csl.csl
 output:
   pdf_document:
-    keep_tex: false
+    keep_tex: true
   html_document: false
   latex_engine: xelatex
 geometry: left=3.5cm, right=3.5cm, top=2.25cm, bottom=2.25cm, headheight=12pt, letterpaper
@@ -16,34 +10,13 @@ header-includes:
 - \usepackage{times}
 - \usepackage{setspace}
 - \usepackage{booktabs}
+- \doublespacing
 - \usepackage{lineno}
+- \linenumbers
 fontsize: 12pt
 bibliography: refs.bib
 ---
 \raggedright
-
-\small
-$^1$ School of Natural Resources and Environment, University of Florida Gainesville, FL, United States  
-\normalsize
-
-### Contributions
-ST concieved of the idea and performed the analysis. ST and SM wrote the manuscript. 
-
-### Funding
-This research was supported by the Gordon and Betty Moore Foundation’s Data-Driven Discovery Initiative through Grant GBMF4563 to E.P. White.
-
-### Data Availability
-All code and extracted data is archived on Zenodo ([https://doi.org/10.5281/zenodo.3364028](https://doi.org/10.5281/zenodo.3364028)).
-
-### Conflicts of Interest
-None declared.
-
-### Preprint DOI
-10.1101/730325, [https://doi.org/10.1101/730325](https://doi.org/10.1101/730325)
-
-**Character count**: 12496, **Tables**: 1, **Figures**: 1
-
-\newpage
 
 # Abstract
 *Key Message*  
