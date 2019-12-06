@@ -2,7 +2,7 @@
 title: "Rethinking global carbon storage potential of trees. A comment on Bastin et. al 2019"
 
 author:
-- Shawn D. TAYLOR$^1$*, shawntaylor@weecology.org
+- Shawn D. TAYLOR$^1$$^,$$^2$*, shawn.taylor@usda.gov
 - Sergio MARCONI$^1$, sergio.marconi@weecology.org 
 
 csl: csl.csl
@@ -22,7 +22,8 @@ bibliography: refs.bib
 \raggedright
 
 \small
-$^1$ School of Natural Resources and Environment, University of Florida Gainesville, FL, United States  
+$^1$ School of Natural Resources and Environment, University of Florida Gainesville, Florida, United States  
+$^2$ U.S. Department of Agriculture, Agricultural Research Service, Jornada Experimental Range, New Mexico State University, Las Cruces, New Mexico, United States
 \normalsize
 
 ### Contributions
